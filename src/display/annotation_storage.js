@@ -14,7 +14,6 @@
  */
 
 import { objectFromMap, unreachable } from "../shared/util.js";
-import { AnnotationEditor } from "./editor/editor.js";
 import { MurmurHash3_64 } from "../shared/murmurhash3.js";
 
 /**
@@ -31,7 +30,6 @@ class AnnotationStorage {
     // can have undesirable effects.
     this.onSetModified = null;
     this.onResetModified = null;
-    this.onAnnotationEditor = null;
   }
 
   /**
@@ -68,20 +66,11 @@ class AnnotationStorage {
    * Remove a value from the storage.
    * @param {string} key
    */
-  remove(key) {
+  removeKey(key) {
     this._storage.delete(key);
 
     if (this._storage.size === 0) {
       this.resetModified();
-    }
-
-    if (typeof this.onAnnotationEditor === "function") {
-      for (const value of this._storage.values()) {
-        if (value instanceof AnnotationEditor) {
-          return;
-        }
-      }
-      this.onAnnotationEditor(null);
     }
   }
 
@@ -108,14 +97,7 @@ class AnnotationStorage {
       this._storage.set(key, value);
     }
     if (modified) {
-      this.#setModified();
-    }
-
-    if (
-      value instanceof AnnotationEditor &&
-      typeof this.onAnnotationEditor === "function"
-    ) {
-      this.onAnnotationEditor(value.constructor._type);
+      this.setModified();
     }
   }
 
@@ -136,7 +118,7 @@ class AnnotationStorage {
     return this._storage.size;
   }
 
-  #setModified() {
+  setModified() {
     if (!this._modified) {
       this._modified = true;
       if (typeof this.onSetModified === "function") {
@@ -171,13 +153,6 @@ class AnnotationStorage {
     }
     const clone = new Map();
 
-    for (const [key, val] of this._storage) {
-      const serialized =
-        val instanceof AnnotationEditor ? val.serialize() : val;
-      if (serialized) {
-        clone.set(key, serialized);
-      }
-    }
     return clone;
   }
 
@@ -204,12 +179,10 @@ class AnnotationStorage {
  * contents. (Necessary since printing is triggered synchronously in browsers.)
  */
 class PrintAnnotationStorage extends AnnotationStorage {
-  #serializable = null;
-
   constructor(parent) {
     super();
     // Create a *copy* of the data, since Objects are passed by reference in JS.
-    this.#serializable = structuredClone(parent.serializable);
+    this.serializable = structuredClone(parent.serializable);
   }
 
   /**
@@ -225,7 +198,7 @@ class PrintAnnotationStorage extends AnnotationStorage {
    * @ignore
    */
   get serializable() {
-    return this.#serializable;
+    return this.serializable;
   }
 }
 

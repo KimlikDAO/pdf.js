@@ -2512,7 +2512,7 @@ class FileAttachmentAnnotationElement extends AnnotationElement {
  */
 
 class AnnotationLayer {
-  static #appendElement(element, id, div, accessibilityManager) {
+  static appendElement(element, id, div, accessibilityManager) {
     const contentElement = element.firstChild || element;
     contentElement.id = `${AnnotationPrefix}${id}`;
 
@@ -2535,7 +2535,7 @@ class AnnotationLayer {
   static render(parameters) {
     const { annotations, div, viewport, accessibilityManager } = parameters;
 
-    this.#setDimensions(div, viewport);
+    this.setDimensions(div, viewport);
     let zIndex = 0;
 
     for (const data of annotations) {
@@ -2570,7 +2570,7 @@ class AnnotationLayer {
         if (Array.isArray(rendered)) {
           for (const renderedElement of rendered) {
             renderedElement.style.zIndex = zIndex++;
-            AnnotationLayer.#appendElement(
+            AnnotationLayer.appendElement(
               renderedElement,
               data.id,
               div,
@@ -2590,7 +2590,7 @@ class AnnotationLayer {
             // annotation elements to prevent interfering with mouse events.
             div.prepend(rendered);
           } else {
-            AnnotationLayer.#appendElement(
+            AnnotationLayer.appendElement(
               rendered,
               data.id,
               div,
@@ -2601,7 +2601,7 @@ class AnnotationLayer {
       }
     }
 
-    this.#setAnnotationCanvasMap(div, parameters.annotationCanvasMap);
+    this.setAnnotationCanvasMap(div, parameters.annotationCanvasMap);
   }
 
   /**
@@ -2614,8 +2614,8 @@ class AnnotationLayer {
   static update(parameters) {
     const { annotationCanvasMap, div, viewport } = parameters;
 
-    this.#setDimensions(div, viewport);
-    this.#setAnnotationCanvasMap(div, annotationCanvasMap);
+    this.setDimensions(div, viewport);
+    this.setAnnotationCanvasMap(div, annotationCanvasMap);
     div.hidden = false;
   }
 
@@ -2623,7 +2623,7 @@ class AnnotationLayer {
    * @param {HTMLDivElement} div
    * @param {PageViewport} viewport
    */
-  static #setDimensions(div, { width, height, rotation }) {
+  static setDimensions(div, { width, height, rotation }) {
     const { style } = div;
 
     const flipOrientation = rotation % 180 !== 0,
@@ -2635,7 +2635,7 @@ class AnnotationLayer {
     div.setAttribute("data-main-rotation", rotation);
   }
 
-  static #setAnnotationCanvasMap(div, annotationCanvasMap) {
+  static setAnnotationCanvasMap(div, annotationCanvasMap) {
     if (!annotationCanvasMap) {
       return;
     }

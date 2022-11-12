@@ -25,13 +25,11 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 
 const AnnotationPrefix = "pdfjs_internal_id_";
 
-class PixelsPerInch {
-  static CSS = 96.0;
+const PixelsPerInchCSS = 96.0;
 
-  static PDF = 72.0;
+const PixelsPerInchPDF = 72.0;
 
-  static PDF_TO_CSS_UNITS = this.CSS / this.PDF;
-}
+const PixelsPerInchPDF_TO_CSS_UNITS = 96 / 72;
 
 class DOMCanvasFactory extends BaseCanvasFactory {
   constructor({ ownerDocument = globalThis.document } = {}) {
@@ -641,7 +639,9 @@ export {
   loadScript,
   PageViewport,
   PDFDateString,
-  PixelsPerInch,
+  PixelsPerInchCSS,
+  PixelsPerInchPDF,
+  PixelsPerInchPDF_TO_CSS_UNITS,
   RenderingCancelledException,
   StatTimer,
 };

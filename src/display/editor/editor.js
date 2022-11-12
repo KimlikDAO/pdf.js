@@ -16,7 +16,7 @@
 // eslint-disable-next-line max-len
 /** @typedef {import("./annotation_editor_layer.js").AnnotationEditorLayer} AnnotationEditorLayer */
 
-import { bindEvents, ColorManager, KeyboardManager } from "./tools.js";
+import { bindEvents, KeyboardManager } from "./tools.js";
 import { shadow, unreachable } from "../../shared/util.js";
 
 /**
@@ -27,30 +27,23 @@ import { shadow, unreachable } from "../../shared/util.js";
  * @property {number} y - y-coordinate
  */
 
+let AnnotationEditorZIndex = 1;
+
 /**
  * Base class for editors.
  */
 class AnnotationEditor {
-  #boundFocusin = this.focusin.bind(this);
-
-  #boundFocusout = this.focusout.bind(this);
-
-  #hasBeenSelected = false;
-
-  #isEditing = false;
-
-  #isInEditMode = false;
-
-  #zIndex = AnnotationEditor._zIndex++;
-
-  static _colorManager = new ColorManager();
-
-  static _zIndex = 1;
-
   /**
    * @param {AnnotationEditorParameters} parameters
    */
   constructor(parameters) {
+    this.zIndex = AnnotationEditorZIndex++;
+    this.isInEditMode = false;
+    this.isEditing = false;
+    this.boundFocusin = this.focusin.bind(this);
+    this.boundFocusout = this.focusout.bind(this);
+
+    this.hasBeenSelected = false;
     if (this.constructor === AnnotationEditor) {
       unreachable("Cannot initialize AnnotationEditor.");
     }
@@ -89,17 +82,17 @@ class AnnotationEditor {
    * This editor will be in the foreground.
    */
   setInForeground() {
-    this.div.style.zIndex = this.#zIndex;
+    this.div.style.zIndex = this.zIndex;
   }
 
   /**
    * onfocus callback.
    */
   focusin(event) {
-    if (!this.#hasBeenSelected) {
+    if (!this.hasBeenSelected) {
       this.parent.setSelected(this);
     } else {
-      this.#hasBeenSelected = false;
+      this.hasBeenSelected = false;
     }
   }
 
@@ -240,8 +233,8 @@ class AnnotationEditor {
 
     this.setInForeground();
 
-    this.div.addEventListener("focusin", this.#boundFocusin);
-    this.div.addEventListener("focusout", this.#boundFocusout);
+    this.div.addEventListener("focusin", this.boundFocusin);
+    this.div.addEventListener("focusout", this.boundFocusout);
 
     const [tx, ty] = this.getInitialTranslation();
     this.translate(tx, ty);
@@ -273,7 +266,7 @@ class AnnotationEditor {
       this.parent.setSelected(this);
     }
 
-    this.#hasBeenSelected = true;
+    this.hasBeenSelected = true;
   }
 
   getRect(tx, ty) {
@@ -357,14 +350,14 @@ class AnnotationEditor {
    * Enable edit mode.
    */
   enableEditMode() {
-    this.#isInEditMode = true;
+    this.isInEditMode = true;
   }
 
   /**
    * Disable edit mode.
    */
   disableEditMode() {
-    this.#isInEditMode = false;
+    this.isInEditMode = false;
   }
 
   /**
@@ -372,7 +365,7 @@ class AnnotationEditor {
    * @returns {boolean}
    */
   isInEditMode() {
-    return this.#isInEditMode;
+    return this.isInEditMode;
   }
 
   /**
@@ -398,7 +391,7 @@ class AnnotationEditor {
    * To implement in subclasses.
    */
   rebuild() {
-    this.div?.addEventListener("focusin", this.#boundFocusin);
+    this.div?.addEventListener("focusin", this.boundFocusin);
   }
 
   /**
@@ -445,8 +438,8 @@ class AnnotationEditor {
    * It's used on ctrl+backspace action.
    */
   remove() {
-    this.div.removeEventListener("focusin", this.#boundFocusin);
-    this.div.removeEventListener("focusout", this.#boundFocusout);
+    this.div.removeEventListener("focusin", this.boundFocusin);
+    this.div.removeEventListener("focusout", this.boundFocusout);
 
     if (!this.isEmpty()) {
       // The editor is removed but it can be back at some point thanks to
@@ -509,7 +502,7 @@ class AnnotationEditor {
    * @type {boolean}
    */
   get isEditing() {
-    return this.#isEditing;
+    return this.isEditing;
   }
 
   /**
@@ -517,7 +510,7 @@ class AnnotationEditor {
    * @param {boolean} value
    */
   set isEditing(value) {
-    this.#isEditing = value;
+    this.isEditing = value;
     if (value) {
       this.parent.setSelected(this);
       this.parent.setActiveEditor(this);

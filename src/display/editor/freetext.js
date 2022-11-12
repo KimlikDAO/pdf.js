@@ -30,12 +30,6 @@ import { AnnotationEditor } from "./editor.js";
  * Basic text editor in order to create a FreeTex annotation.
  */
 class FreeTextEditor extends AnnotationEditor {
-  #boundEditorDivBlur = this.editorDivBlur.bind(this);
-
-  #boundEditorDivFocus = this.editorDivFocus.bind(this);
-
-  #boundEditorDivKeydown = this.editorDivKeydown.bind(this);
-
   #color;
 
   #content = "";
@@ -65,6 +59,9 @@ class FreeTextEditor extends AnnotationEditor {
 
   constructor(params) {
     super({ ...params, name: "freeTextEditor" });
+    this.boundEditorDivBlur = this.editorDivBlur.bind(this);
+    this.boundEditorDivFocus = this.editorDivFocus.bind(this);
+    this.boundEditorDivKeydown = this.editorDivKeydown.bind(this);
     this.#color =
       params.color ||
       FreeTextEditor._defaultColor ||
@@ -228,9 +225,9 @@ class FreeTextEditor extends AnnotationEditor {
     this.overlayDiv.classList.remove("enabled");
     this.editorDiv.contentEditable = true;
     this.div.draggable = false;
-    this.editorDiv.addEventListener("keydown", this.#boundEditorDivKeydown);
-    this.editorDiv.addEventListener("focus", this.#boundEditorDivFocus);
-    this.editorDiv.addEventListener("blur", this.#boundEditorDivBlur);
+    this.editorDiv.addEventListener("keydown", this.boundEditorDivKeydown);
+    this.editorDiv.addEventListener("focus", this.boundEditorDivFocus);
+    this.editorDiv.addEventListener("blur", this.boundEditorDivBlur);
   }
 
   /** @inheritdoc */
@@ -245,9 +242,9 @@ class FreeTextEditor extends AnnotationEditor {
     this.overlayDiv.classList.add("enabled");
     this.editorDiv.contentEditable = false;
     this.div.draggable = true;
-    this.editorDiv.removeEventListener("keydown", this.#boundEditorDivKeydown);
-    this.editorDiv.removeEventListener("focus", this.#boundEditorDivFocus);
-    this.editorDiv.removeEventListener("blur", this.#boundEditorDivBlur);
+    this.editorDiv.removeEventListener("keydown", this.boundEditorDivKeydown);
+    this.editorDiv.removeEventListener("focus", this.boundEditorDivFocus);
+    this.editorDiv.removeEventListener("blur", this.boundEditorDivBlur);
 
     // On Chrome, the focus is given to <body> when contentEditable is set to
     // false, hence we focus the div.

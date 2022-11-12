@@ -19,7 +19,6 @@ import {
   Util,
 } from "../../shared/util.js";
 import { AnnotationEditor } from "./editor.js";
-import { fitCurve } from "pdfjs-fitCurve";
 import { opacityToHex } from "./tools.js";
 
 // The dimensions of the resizer is 15x15:
@@ -1071,4 +1070,4 @@ class InkEditor extends AnnotationEditor {
   }
 }
 
-export { fitCurve, InkEditor };
+export { InkEditor };

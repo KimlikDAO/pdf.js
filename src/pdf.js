@@ -57,14 +57,10 @@ import {
   isValidFetchUrl,
   loadScript,
   PDFDateString,
-  PixelsPerInch,
   RenderingCancelledException,
 } from "./display/display_utils.js";
-import { AnnotationEditorLayer } from "./display/editor/annotation_editor_layer.js";
-import { AnnotationEditorUIManager } from "./display/editor/tools.js";
 import { AnnotationLayer } from "./display/annotation_layer.js";
 import { GlobalWorkerOptions } from "./display/worker_options.js";
-import { isNodeJS } from "./shared/is_node.js";
 import { renderTextLayer } from "./display/text_layer.js";
 import { SVGGraphics } from "./display/svg.js";
 import { XfaLayer } from "./display/xfa_layer.js";
@@ -78,8 +74,8 @@ const pdfjsBuild =
 
 if (typeof PDFJSDev === "undefined" || !PDFJSDev.test("PRODUCTION")) {
   const streamsPromise = Promise.all([
-    import("pdfjs/display/network.js"),
-    import("pdfjs/display/fetch_stream.js"),
+    import("./display/network.js"),
+    import("./display/fetch_stream.js"),
   ]);
 
   setPDFNetworkStreamFactory(async params => {
@@ -89,31 +85,11 @@ if (typeof PDFJSDev === "undefined" || !PDFJSDev.test("PRODUCTION")) {
     }
     return new PDFNetworkStream(params);
   });
-} else if (PDFJSDev.test("GENERIC || CHROME")) {
-  if (PDFJSDev.test("GENERIC") && isNodeJS) {
-    const { PDFNodeStream } = require("./display/node_stream.js");
-
-    setPDFNetworkStreamFactory(params => {
-      return new PDFNodeStream(params);
-    });
-  } else {
-    const { PDFNetworkStream } = require("./display/network.js");
-    const { PDFFetchStream } = require("./display/fetch_stream.js");
-
-    setPDFNetworkStreamFactory(params => {
-      if (isValidFetchUrl(params.url)) {
-        return new PDFFetchStream(params);
-      }
-      return new PDFNetworkStream(params);
-    });
-  }
 }
 
 export {
-  AnnotationEditorLayer,
   AnnotationEditorParamsType,
   AnnotationEditorType,
-  AnnotationEditorUIManager,
   AnnotationLayer,
   AnnotationMode,
   build,
@@ -136,7 +112,6 @@ export {
   PDFDateString,
   PDFWorker,
   PermissionFlag,
-  PixelsPerInch,
   RenderingCancelledException,
   renderTextLayer,
   shadow,

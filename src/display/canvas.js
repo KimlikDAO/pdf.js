@@ -30,7 +30,7 @@ import {
   getCurrentTransform,
   getCurrentTransformInverse,
   getRGB,
-  PixelsPerInch,
+  PixelsPerInchPDF_TO_CSS_UNITS,
 } from "./display_utils.js";
 import {
   getShadingPattern,
@@ -999,7 +999,7 @@ function getImageSmoothingEnabled(transform, interpolate) {
   scale[0] = Math.fround(scale[0]);
   scale[1] = Math.fround(scale[1]);
   const actualScale = Math.fround(
-    (globalThis.devicePixelRatio || 1) * PixelsPerInch.PDF_TO_CSS_UNITS
+    (globalThis.devicePixelRatio || 1) * PixelsPerInchPDF_TO_CSS_UNITS
   );
   if (interpolate !== undefined) {
     // If the value is explicitly set use it.
@@ -1254,7 +1254,7 @@ class CanvasGraphics {
     }
   }
 
-  #restoreInitialState() {
+  restoreInitialState() {
     // Finishing all opened operations such as SMask group painting.
     while (this.stateStack.length || this.inSMaskMode) {
       this.restore();
@@ -1273,7 +1273,7 @@ class CanvasGraphics {
   }
 
   endDrawing() {
-    this.#restoreInitialState();
+    this.restoreInitialState();
 
     this.cachedCanvases.clear();
     this.cachedPatterns.clear();
@@ -2766,7 +2766,7 @@ class CanvasGraphics {
     // The page content drawing can potentially have set a transform,
     // a clipping path, whatever...
     // So in order to have something clean, we restore the initial state.
-    this.#restoreInitialState();
+    this.restoreInitialState();
     resetCtxToDefault(this.ctx, this.foregroundColor);
 
     this.ctx.save();
